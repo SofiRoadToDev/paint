@@ -1,0 +1,28 @@
+#Bar {
+    height: 150px;
+}
+
+#canvas {
+    height: 900px;
+    width: 900px;
+    border: 2px solid blue;
+    background-color: white;
+}
+
+.tools{
+    height: 900px;
+    width: 400px;
+    border: 2px solid red;
+    background-color: white;
+}
+
+
+body{
+    margin: 0;
+    padding: 0;
+
+}
+.main-container{
+    background-color: bisque;
+}
+
