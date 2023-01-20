@@ -4,7 +4,7 @@ var ctx= lienzo.getContext('2d');
 const colorPicker= document.querySelector('#color');
 const shapePicker= document.querySelector('#shape');
 const grosorPicker= document.querySelector('#grosor');
-//var rect= lienzo.getBoundingClientRect();//ubicacion del canvas respectoa  la pantalla
+var rect= lienzo.getBoundingClientRect();//ubicacion del canvas respectoa  la pantalla
 
 let color =colorPicker.value;
 let grosor =grosorPicker.value;
@@ -12,8 +12,8 @@ let shape=shapePicker.value;
 
 let isDrawing=false;
 
-const canvasOffsetX=lienzo.offsetLeft;// distancia desde el borde del elemento padre a nuestro canvas
-const canvasOffsetY=lienzo.offsetTop;
+const canvasOffsetX=rect.left;// distancia desde el borde del elemento padre a nuestro canvas
+const canvasOffsetY=rect.top;
 
 let startX;
 let startY;
@@ -37,22 +37,21 @@ const setShape =(f)=>{
 
 
 
-const dibujar= (x,y)=>{
-    let xPosition=x-canvasOffsetX;
-    let yPosition=y-canvasOffsetY;
+const dibujar= (x,y,x1,y1)=>{
 
-    console.log(`drawing X: ${x} y: ${y}`)
     if(!isDrawing){
         return;
     }
-    
+    ctx.beginPath();
     ctx.lineWidth=grosor;
     ctx.lineCap=shape;
     ctx.strokeStyle=color;
-    ctx.lineTo(xPosition,yPosition);
+    ctx.moveTo(x,y);
+    ctx.lineTo(x1,y1);
     ctx.stroke();
-    
+   
 }
+
 
 
 
@@ -60,16 +59,18 @@ const dibujar= (x,y)=>{
 
 const clickOnCanvas=(e) =>  { 
     isDrawing=true;
-    startX=e.clientX;
-    startY=e.clientY;
-   
-    //console.log(' click on canvas x: '+e.clientX+' valor startX: '+ startX)
+    
    
 }
 
 
 const mouseMoving=(e)=>{
-    dibujar(e.clientX,e.clientY);
+    if(isDrawing){
+        dibujar(startX,startY,e.offsetX,e.offsetY);
+        startX=e.offsetX;
+        startY=e.offsetY;
+    }
+  
     
 }
 
@@ -77,19 +78,17 @@ const mouseMoving=(e)=>{
 
 const leaveCanvas=(e) => {
 
-    console.log(`Mouse leave: x: ${e.clientX} y: ${e.clientY}`)
-
     isDrawing=false;
-    ctx.stroke();
-    ctx.beginPath(); 
+    ctx.closePath();
     
 }
-
-
-
-
-
 
 lienzo.addEventListener('mousedown',clickOnCanvas)
 lienzo.addEventListener('mousemove',mouseMoving)
 lienzo.addEventListener('mouseup',leaveCanvas)
+
+
+
+
+
+
