@@ -6,9 +6,18 @@ const shapePicker= document.querySelector('#shape');
 const grosorPicker= document.querySelector('#grosor');
 //var rect= lienzo.getBoundingClientRect();//ubicacion del canvas respectoa  la pantalla
 
-var color =colorPicker.value;
-var grosor =grosorPicker.value;
-var shape=shapePicker.value;
+let color =colorPicker.value;
+let grosor =grosorPicker.value;
+let shape=shapePicker.value;
+
+let isDrawing=false;
+
+const canvasOffsetX=lienzo.offsetLeft;// distancia desde el borde del elemento padre a nuestro canvas
+const canvasOffsetY=lienzo.offsetTop;
+
+let startX;
+let startY;
+
 
 
 /**Manejo de cambios en inputs color y grosor */
@@ -25,54 +34,62 @@ const setShape =(f)=>{
     shape =f
 }
 
-const dibujar= (cursorX,cursorY)=>{
 
-    console.log('cursorX: '+cursorX+' cursorY: '+cursorY)
-    //iniciamos una nueva ruta
-    ctx.beginPath();
-    ctx.moveTo(initialX,initialY);
 
-    //definimos el color y grosor
-    ctx.strokeStyle=color;
+
+const dibujar= (x,y)=>{
+    let xPosition=x-canvasOffsetX;
+    let yPosition=y-canvasOffsetY;
+
+    console.log(`drawing X: ${x} y: ${y}`)
+    if(!isDrawing){
+        return;
+    }
+    
     ctx.lineWidth=grosor;
     ctx.lineCap=shape;
-    ctx.lineJoin = "round";
-
-    ctx.lineTo(cursorX,cursorY);
+    ctx.strokeStyle=color;
+    ctx.lineTo(xPosition,yPosition);
     ctx.stroke();
-    //ctx.closePath();
-   initialX=cursorX;
-   initialY=cursorY;
-
+    
 }
 
 
 
 
 
-
+const clickOnCanvas=(e) =>  { 
+    isDrawing=true;
+    startX=e.clientX;
+    startY=e.clientY;
+   
+    //console.log(' click on canvas x: '+e.clientX+' valor startX: '+ startX)
+   
+}
 
 
 const mouseMoving=(e)=>{
-    console.log('mouse moving');
-    dibujar(e.offsetX,e.offsetY);
+    dibujar(e.clientX,e.clientY);
+    
 }
 
-const clickOnCanvas=(e) =>  {       
-    initialX=e.offsetX;
-    initialY=e.offsetY;
-    dibujar(initialX,initialY);
-    lienzo.addEventListener('mousemove',mouseMoving)
-}
+
 
 const leaveCanvas=(e) => {
-    lienzo.removeEventListener('mousemove',mouseMoving)
+
+    console.log(`Mouse leave: x: ${e.clientX} y: ${e.clientY}`)
+
+    isDrawing=false;
+    ctx.stroke();
+    ctx.beginPath(); 
+    
 }
 
 
 
 
-lienzo.addEventListener('mouseup',leaveCanvas)
+
+
 lienzo.addEventListener('mousedown',clickOnCanvas)
-
-
+lienzo.addEventListener('mousemove',mouseMoving)
+lienzo.addEventListener('mouseup',leaveCanvas)
